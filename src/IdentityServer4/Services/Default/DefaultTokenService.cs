@@ -145,7 +145,7 @@ namespace IdentityServer4.Core.Services.Default
 
             var token = new Token(OidcConstants.TokenTypes.IdentityToken)
             {
-                Audience = request.Client.ClientId,
+                Audiences = new List<string> { request.Client.ClientId },
                 Issuer = issuer,
                 Lifetime = request.Client.IdentityTokenLifetime,
                 Claims = claims.Distinct(new ClaimComparer()).ToList(),
@@ -180,9 +180,17 @@ namespace IdentityServer4.Core.Services.Default
             }
 
             var issuer = _context.GetIssuerUri();
+
+            var auds = request.Scopes.Where(scope => scope.Type == ScopeType.Resource).Select(scope => scope.Name.Split('.').First()).Distinct().ToList();
+            if (request.Scopes.Any(s => s.Name == Constants.StandardScopes.OpenId) || auds.Count() == 0)
+            {
+                auds.Add(string.Format(Constants.AccessTokenAudience, issuer.EnsureTrailingSlash()));
+            }
+
             var token = new Token(OidcConstants.TokenTypes.AccessToken)
             {
-                Audience = string.Format(Constants.AccessTokenAudience, issuer.EnsureTrailingSlash()),
+                //Audience = string.Format(Constants.AccessTokenAudience, issuer.EnsureTrailingSlash()),
+                Audiences = auds,
                 Issuer = issuer,
                 Lifetime = request.Client.AccessTokenLifetime,
                 Claims = claims.Distinct(new ClaimComparer()).ToList(),

@@ -21,7 +21,7 @@ namespace IdentityServer4.Core.ResponseHandling
             _logger = logger;
         }
 
-        public Task<Dictionary<string, object>> ProcessAsync(IntrospectionRequestValidationResult validationResult, Scope scope)
+        public Task<Dictionary<string, object>> ProcessAsync(IntrospectionRequestValidationResult validationResult, Client client)
         {
             _logger.LogVerbose("Creating introspection response");
 
@@ -35,21 +35,21 @@ namespace IdentityServer4.Core.ResponseHandling
                 return Task.FromResult(response);
             }
 
-            if (scope.AllowUnrestrictedIntrospection)
-            {
+            //if (scope.AllowUnrestrictedIntrospection)
+            //{
                 _logger.LogInformation("Creating unrestricted introspection response for active token.");
 
                 response = validationResult.Claims.ToClaimsDictionary();
                 response.Add("active", true);
-            }
-            else
-            {
-                _logger.LogInformation("Creating restricted introspection response for active token.");
+            //}
+            //else
+            //{
+            //    _logger.LogInformation("Creating restricted introspection response for active token.");
 
-                response = validationResult.Claims.Where(c => c.Type != JwtClaimTypes.Scope).ToClaimsDictionary();
-                response.Add("active", true);
-                response.Add("scope", scope.Name);
-            }
+            //    response = validationResult.Claims.Where(c => c.Type != JwtClaimTypes.Scope).ToClaimsDictionary();
+            //    response.Add("active", true);
+            //    response.Add("scope", scope.Name);
+            //}
 
             return Task.FromResult(response);
         }

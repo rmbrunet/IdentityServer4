@@ -99,7 +99,8 @@ namespace IdentityServer4.Tests.Clients
             var userInfo = await userInfoclient.GetAsync();
 
             userInfo.IsError.Should().BeTrue();
-            userInfo.HttpErrorStatusCode.Should().Be(HttpStatusCode.Forbidden);
+            //userInfo.HttpErrorStatusCode.Should().Be(HttpStatusCode.Forbidden);
+            userInfo.HttpErrorStatusCode.Should().Be(HttpStatusCode.Unauthorized);
         }
 
         [Fact]
@@ -122,7 +123,8 @@ namespace IdentityServer4.Tests.Clients
             var userInfo = await userInfoclient.GetAsync();
 
             userInfo.IsError.Should().BeTrue();
-            userInfo.HttpErrorStatusCode.Should().Be(HttpStatusCode.Forbidden);
+            //userInfo.HttpErrorStatusCode.Should().Be(HttpStatusCode.Forbidden);
+            userInfo.HttpErrorStatusCode.Should().Be(HttpStatusCode.Unauthorized);
         }
     }
 }

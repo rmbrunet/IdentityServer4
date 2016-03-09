@@ -3,7 +3,6 @@
 
 using System.Linq;
 using System.Threading.Tasks;
-using IdentityServer4.Core.Configuration;
 using IdentityServer4.Core.Validation;
 using IdentityServer4.Core.Services;
 using IdentityServer4.Core.ResponseHandling;
@@ -21,13 +20,14 @@ namespace IdentityServer4.Core.Endpoints
         private readonly ILogger _logger;
         private readonly IEventService _events;
         private readonly IUserInfoResponseGenerator _generator;
-        private readonly IdentityServerOptions _options;
+        private readonly IdentityServerContext _context;
         private readonly BearerTokenUsageValidator _tokenUsageValidator;
         private readonly ITokenValidator _tokenValidator;
 
-        public UserInfoEndpoint(IdentityServerOptions options, ITokenValidator tokenValidator, IUserInfoResponseGenerator generator, BearerTokenUsageValidator tokenUsageValidator, IEventService events, ILogger<UserInfoEndpoint> logger)
+        public UserInfoEndpoint(IdentityServerContext context, ITokenValidator tokenValidator, IUserInfoResponseGenerator generator, BearerTokenUsageValidator tokenUsageValidator, IEventService events, ILogger<UserInfoEndpoint> logger)
         {
-            _options = options;
+
+            _context = context;
             _tokenValidator = tokenValidator;
             _tokenUsageValidator = tokenUsageValidator;
             _generator = generator;
@@ -56,9 +56,12 @@ namespace IdentityServer4.Core.Endpoints
 
             _logger.LogInformation("Token found: {token}", tokenUsageResult.UsageType.ToString());
 
+            var issuer = _context.GetIssuerUri();
+
             var tokenResult = await _tokenValidator.ValidateAccessTokenAsync(
-                tokenUsageResult.Token,
-                Constants.StandardScopes.OpenId);
+                tokenUsageResult.Token, 
+                audience: string.Format(Constants.AccessTokenAudience, issuer.EnsureTrailingSlash()),
+                expectedScope : Constants.StandardScopes.OpenId);
 
             if (tokenResult.IsError)
             {
@@ -91,7 +94,7 @@ namespace IdentityServer4.Core.Endpoints
 
         private async Task RaiseFailureEventAsync(string error)
         {
-            if (_options.EventsOptions.RaiseFailureEvents)
+            if (_context.Options.EventsOptions.RaiseFailureEvents)
             {
                 await _events.RaiseFailureEndpointEventAsync(EventConstants.EndpointNames.UserInfo, error);
             }

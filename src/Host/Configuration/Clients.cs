@@ -9,6 +9,21 @@ namespace Host.Configuration
         {
             return new List<Client>
             {
+                new Client
+                {
+                    ClientId = "imgsrv",
+                    ClientSecrets = new List<Secret>
+                    {
+                        new Secret("secret".Sha256())
+                    },
+
+                    Flow = Flows.ClientCredentials,
+
+                    AllowedScopes = new List<string>
+                    {
+                        StandardScopes.Instrospection.Name
+                    }
+                },
                 ///////////////////////////////////////////
                 // Console Client Credentials Flow Sample
                 //////////////////////////////////////////
@@ -46,7 +61,6 @@ namespace Host.Configuration
                         StandardScopes.OpenId.Name,
                         StandardScopes.Email.Name,
                         StandardScopes.OfflineAccess.Name,
-
                         "api1", "api2"
                     }
                 },

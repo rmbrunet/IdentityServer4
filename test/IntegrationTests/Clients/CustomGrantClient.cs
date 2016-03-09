@@ -58,7 +58,8 @@ namespace IdentityServer4.Tests.Clients
 
             payload.Count().Should().Be(10);
             payload.Should().Contain("iss", "https://idsrv4");
-            payload.Should().Contain("aud", "https://idsrv4/resources");
+            //payload.Should().Contain("aud", "https://idsrv4/resources");
+            payload.Should().Contain("aud", "api1");
             payload.Should().Contain("client_id", "client.custom");
             payload.Should().Contain("scope", "api1");
             payload.Should().Contain("sub", "818727");

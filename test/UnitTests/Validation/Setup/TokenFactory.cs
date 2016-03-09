@@ -24,7 +24,7 @@ namespace IdentityServer4.Tests.Validation
 
             var token = new Token(OidcConstants.TokenTypes.AccessToken)
             {
-                Audience = "https://idsrv3.com/resources",
+                Audiences = new List<string> { "https://idsrv3.com/resources" },
                 Issuer = "https://idsrv3.com",
                 Lifetime = lifetime,
                 Claims = claims,
@@ -51,7 +51,7 @@ namespace IdentityServer4.Tests.Validation
 
             var token = new Token(OidcConstants.TokenTypes.AccessToken)
             {
-                Audience = "https://idsrv3.com/resources",
+                Audiences = new List<string> { "https://idsrv3.com/resources" },
                 Issuer = "https://idsrv3.com",
                 Lifetime = lifetime,
                 Claims = claims,
@@ -72,7 +72,7 @@ namespace IdentityServer4.Tests.Validation
 
             var token = new Token(OidcConstants.TokenTypes.IdentityToken)
             {
-                Audience = clientId,
+                Audiences = new List<string> { clientId },
                 Client = clients.FindClientByIdAsync(clientId).Result,
                 Issuer = "https://idsrv3.com",
                 Lifetime = 600,
@@ -98,7 +98,7 @@ namespace IdentityServer4.Tests.Validation
 
             var token = new Token(OidcConstants.TokenTypes.IdentityToken)
             {
-                Audience = clientId,
+                Audiences = new List<string> { clientId },
                 Client = clients.FindClientByIdAsync(clientId).Result,
                 Issuer = "https://idsrv3.com",
                 Lifetime = 600,

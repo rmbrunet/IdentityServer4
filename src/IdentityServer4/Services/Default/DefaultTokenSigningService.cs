@@ -12,6 +12,7 @@ using Newtonsoft.Json;
 using System.IdentityModel.Tokens;
 using IdentityModel;
 
+
 #if DOTNET5_4
 using System.IdentityModel.Tokens.Jwt;
 #endif
@@ -94,7 +95,8 @@ namespace IdentityServer4.Core.Services.Default
         {
             var payload = new JwtPayload(
                 token.Issuer,
-                token.Audience,
+                //token.Audience,
+                null,
                 null,
                 DateTimeHelper.UtcNow,
                 DateTimeHelper.UtcNow.AddSeconds(token.Lifetime));
@@ -104,6 +106,8 @@ namespace IdentityServer4.Core.Services.Default
             var normalClaims = token.Claims.Except(amrClaims).Except(jsonClaims);
 
             payload.AddClaims(normalClaims);
+
+            payload.AddClaims(token.Audiences.Select(aud => new System.Security.Claims.Claim(JwtClaimTypes.Audience, aud)));
 
             // deal with amr
             var amrValues = amrClaims.Select(x => x.Value).Distinct().ToArray();

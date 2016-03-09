@@ -21,7 +21,7 @@ namespace IdentityServer4.Core.Models
         /// <value>
         /// The audience.
         /// </value>
-        public string Audience { get; set; }
+        public List<string> Audiences { get; set; }
         
         /// <summary>
         /// Gets or sets the issuer.

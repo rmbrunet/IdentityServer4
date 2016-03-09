@@ -53,7 +53,8 @@ namespace IdentityServer4.Tests.Clients
 
             payload.Count().Should().Be(6);
             payload.Should().Contain("iss", "https://idsrv4");
-            payload.Should().Contain("aud", "https://idsrv4/resources");
+            //payload.Should().Contain("aud", "https://idsrv4/resources");
+            payload.Should().Contain("aud", "api1");
             payload.Should().Contain("client_id", "client");
             payload.Should().Contain("scope", "api1");
         }
@@ -79,7 +80,15 @@ namespace IdentityServer4.Tests.Clients
 
             payload.Count().Should().Be(6);
             payload.Should().Contain("iss", "https://idsrv4");
-            payload.Should().Contain("aud", "https://idsrv4/resources");
+            //payload.Should().Contain("aud", "https://idsrv4/resources");
+
+            var audiences = payload["aud"] as JArray;
+            audiences.Count().Should().Be(2);
+            audiences.First().ToString().Should().Be("api1");
+            audiences.Skip(1).First().ToString().Should().Be("api2");
+
+            //payload.Should().Contain("aud", "api1");
+
             payload.Should().Contain("client_id", "client");
 
             var scopes = payload["scope"] as JArray;
@@ -110,7 +119,8 @@ namespace IdentityServer4.Tests.Clients
 
             payload.Count().Should().Be(6);
             payload.Should().Contain("iss", "https://idsrv4");
-            payload.Should().Contain("aud", "https://idsrv4/resources");
+            //payload.Should().Contain("aud", "https://idsrv4/resources");
+            payload.Should().Contain("aud", "api1");
             payload.Should().Contain("client_id", "client");
             payload.Should().Contain("scope", "api1");
         }

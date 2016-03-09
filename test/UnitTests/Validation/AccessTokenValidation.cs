@@ -97,7 +97,7 @@ namespace IdentityServer4.Tests.Validation.Tokens
 
             await store.StoreAsync(handle, token);
 
-            var result = await validator.ValidateAccessTokenAsync("123", "read");
+            var result = await validator.ValidateAccessTokenAsync("123", expectedScope:"read");
 
             result.IsError.Should().BeFalse();
         }
@@ -114,7 +114,7 @@ namespace IdentityServer4.Tests.Validation.Tokens
 
             await store.StoreAsync(handle, token);
 
-            var result = await validator.ValidateAccessTokenAsync("123", "missing");
+            var result = await validator.ValidateAccessTokenAsync("123", expectedScope: "missing");
 
             result.IsError.Should().BeTrue();
             result.Error.Should().Be(OidcConstants.ProtectedResourceErrors.InsufficientScope);
@@ -232,11 +232,11 @@ namespace IdentityServer4.Tests.Validation.Tokens
         {
             var signer = Factory.CreateDefaultTokenSigningService();
             var token = TokenFactory.CreateAccessToken(new Client { ClientId = "roclient" }, "valid", 600, "read", "write");
-            token.Audience = "invalid";
+            token.Audiences = new List<string> { "invalid" };
             var jwt = await signer.SignTokenAsync(token);
 
             var validator = Factory.CreateTokenValidator(null);
-            var result = await validator.ValidateAccessTokenAsync(jwt);
+            var result = await validator.ValidateAccessTokenAsync(jwt, audience:"valid");
 
             result.IsError.Should().BeTrue();
             result.Error.Should().Be(OidcConstants.ProtectedResourceErrors.InvalidToken);

@@ -53,7 +53,8 @@ namespace IdentityServer4.Tests.Clients
 
             payload.Count().Should().Be(10);
             payload.Should().Contain("iss", "https://idsrv4");
-            payload.Should().Contain("aud", "https://idsrv4/resources");
+            //payload.Should().Contain("aud", "https://idsrv4/resources");
+            payload.Should().Contain("aud", "api1");
             payload.Should().Contain("client_id", "roclient");
             payload.Should().Contain("scope", "api1");
             payload.Should().Contain("sub", "88421113");
@@ -85,7 +86,15 @@ namespace IdentityServer4.Tests.Clients
 
             payload.Count().Should().Be(10);
             payload.Should().Contain("iss", "https://idsrv4");
-            payload.Should().Contain("aud", "https://idsrv4/resources");
+            //payload.Should().Contain("aud", "https://idsrv4/resources");
+            var auds = payload["aud"] as JArray;
+            auds.Count().Should().Be(2);
+            auds.First().ToString().Should().Be("api1");
+            auds.Skip(1).First().ToString().Should().Be("https://idsrv4/resources");
+            //payload.Should().Contain("aud", "api1");
+
+
+
             payload.Should().Contain("client_id", "roclient");
             payload.Should().Contain("sub", "88421113");
             payload.Should().Contain("idp", "idsrv");
@@ -122,7 +131,15 @@ namespace IdentityServer4.Tests.Clients
 
             payload.Count().Should().Be(10);
             payload.Should().Contain("iss", "https://idsrv4");
-            payload.Should().Contain("aud", "https://idsrv4/resources");
+            //payload.Should().Contain("aud", "https://idsrv4/resources");
+            var audiences = payload["aud"] as JArray;
+            audiences.Count().Should().Be(3);
+            audiences.First().ToString().Should().Be("api1");
+            audiences.Skip(1).First().ToString().Should().Be("offline_access");
+            audiences.Skip(2).First().ToString().Should().Be("https://idsrv4/resources");
+
+
+
             payload.Should().Contain("client_id", "roclient");
             payload.Should().Contain("sub", "88421113");
             payload.Should().Contain("idp", "idsrv");

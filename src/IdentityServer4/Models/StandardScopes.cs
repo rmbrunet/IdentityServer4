@@ -322,5 +322,16 @@ namespace IdentityServer4.Core.Models
                 };
             }
         }
+        public static Scope Instrospection
+        {
+            get
+            {
+                return new Scope
+                {
+                    Name = Constants.StandardScopes.Instrospection,
+                    Type = ScopeType.Resource
+                };
+            }
+        }
     }
 }

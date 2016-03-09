@@ -37,6 +37,10 @@ namespace IdentityServer4.Tests.Endpoints.Introspection
                     {
                         new Secret("secret".Sha256())
                     }
+                },
+                new Scope
+                {
+                    Name = "instrospection",
                 }
             };
         }

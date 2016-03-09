@@ -75,7 +75,8 @@ namespace IdentityServer4.Tests.Endpoints.Introspection
             _client.SetBasicAuthentication("api1", "secret");
             var response = await _client.PostAsync(IntrospectionEndpoint, new FormUrlEncodedContent(form));
 
-            response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+            //response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+            response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
         }
 
         [Fact]
@@ -94,7 +95,7 @@ namespace IdentityServer4.Tests.Endpoints.Introspection
             });
 
             response.IsActive.Should().Be(false);
-            response.IsError.Should().Be(false);
+            response.IsError.Should().Be(true);
         }
 
         [Fact]
@@ -107,11 +108,11 @@ namespace IdentityServer4.Tests.Endpoints.Introspection
                 "secret",
                 _handler);
 
-            var tokenResponse = await tokenClient.RequestClientCredentialsAsync("api1");
+            var tokenResponse = await tokenClient.RequestClientCredentialsAsync("api1 instrospection");
 
             var introspectionClient = new IntrospectionClient(
                 IntrospectionEndpoint,
-                "api1",
+                "client1",
                 "secret",
                 _handler);
 
@@ -127,7 +128,7 @@ namespace IdentityServer4.Tests.Endpoints.Introspection
                          where c.Item1 == "scope"
                          select c;
 
-            scopes.Count().Should().Be(1);
+            scopes.Count().Should().Be(2);
             scopes.First().Item2.Should().Be("api1");
         }
 
@@ -141,11 +142,11 @@ namespace IdentityServer4.Tests.Endpoints.Introspection
                 "secret",
                 _handler);
 
-            var tokenResponse = await tokenClient.RequestClientCredentialsAsync("api1 api2 unrestricted.api");
+            var tokenResponse = await tokenClient.RequestClientCredentialsAsync("api1 api2 unrestricted.api instrospection");
 
             var introspectionClient = new IntrospectionClient(
                 IntrospectionEndpoint,
-                "unrestricted.api",
+                "client1",
                 "secret",
                 _handler);
 
@@ -161,7 +162,7 @@ namespace IdentityServer4.Tests.Endpoints.Introspection
                          where c.Item1 == "scope"
                          select c;
 
-            scopes.Count().Should().Be(3);
+            scopes.Count().Should().Be(4);
         }
 
         [Fact]
@@ -174,11 +175,11 @@ namespace IdentityServer4.Tests.Endpoints.Introspection
                 "secret",
                 _handler);
 
-            var tokenResponse = await tokenClient.RequestClientCredentialsAsync("api1 api2");
+            var tokenResponse = await tokenClient.RequestClientCredentialsAsync("api1 api2 instrospection");
 
             var introspectionClient = new IntrospectionClient(
                 IntrospectionEndpoint,
-                "api1",
+                "client1",
                 "secret",
                 _handler);
 
@@ -194,7 +195,7 @@ namespace IdentityServer4.Tests.Endpoints.Introspection
                          where c.Item1 == "scope"
                          select c;
 
-            scopes.Count().Should().Be(1);
+            scopes.Count().Should().Be(3); //api1, api2, instrospection
             scopes.First().Item2.Should().Be("api1");
         }
 
@@ -212,7 +213,7 @@ namespace IdentityServer4.Tests.Endpoints.Introspection
 
             var introspectionClient = new IntrospectionClient(
                 IntrospectionEndpoint,
-                "api2",
+                "client1",
                 "secret",
                 _handler);
 

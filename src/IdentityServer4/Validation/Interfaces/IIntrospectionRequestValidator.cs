@@ -9,6 +9,6 @@ namespace IdentityServer4.Core.Validation
 {
     public interface IIntrospectionRequestValidator
     {
-        Task<IntrospectionRequestValidationResult> ValidateAsync(NameValueCollection parameters, Scope scope);
+        Task<IntrospectionRequestValidationResult> ValidateAsync(NameValueCollection parameters, Client scope);
     }
 }

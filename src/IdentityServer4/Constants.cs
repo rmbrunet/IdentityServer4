@@ -211,6 +211,8 @@ namespace IdentityServer4.Core
             /// <summary>This scope value MUST NOT be used with the OpenID Connect Implicit Client Implementer's Guide 1.0. See the OpenID Connect Basic Client Implementer's Guide 1.0 (http://openid.net/specs/openid-connect-implicit-1_0.html#OpenID.Basic) for its usage in that subset of OpenID Connect.</summary>
             public const string OfflineAccess = "offline_access";
 
+            public const string Instrospection = "instrospection";
+
             // not part of spec
             public const string AllClaims     = "all_claims";
             public const string Roles         = "roles";

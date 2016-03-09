@@ -18,7 +18,7 @@ namespace IdentityServer4.Core.Validation
             _tokenValidator = tokenValidator;
         }
 
-        public async Task<IntrospectionRequestValidationResult> ValidateAsync(NameValueCollection parameters, Scope scope)
+        public async Task<IntrospectionRequestValidationResult> ValidateAsync(NameValueCollection parameters, Client client)
         {
             var fail = new IntrospectionRequestValidationResult { IsError = true };
 
@@ -32,7 +32,7 @@ namespace IdentityServer4.Core.Validation
             }
 
             // validate token
-            var tokenValidationResult = await _tokenValidator.ValidateAccessTokenAsync(token);
+            var tokenValidationResult = await _tokenValidator.ValidateAccessTokenAsync(token, client.ClientId, StandardScopes.Instrospection.Name);
 
             // invalid or unknown token
             if (tokenValidationResult.IsError)
@@ -45,7 +45,7 @@ namespace IdentityServer4.Core.Validation
 
             // check expected scope
             var expectedScope = tokenValidationResult.Claims.FirstOrDefault(
-                c => c.Type == JwtClaimTypes.Scope && c.Value == scope.Name);
+                c => c.Type == JwtClaimTypes.Scope && c.Value == StandardScopes.Instrospection.Name);
 
             // expected scope not present
             if (expectedScope == null)

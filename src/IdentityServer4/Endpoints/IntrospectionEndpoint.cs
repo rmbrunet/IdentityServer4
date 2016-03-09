@@ -20,11 +20,11 @@ namespace IdentityServer4.Core.Endpoints
         private readonly IIntrospectionResponseGenerator _generator;
         private readonly ILogger<IntrospectionEndpoint> _logger;
         private readonly IIntrospectionRequestValidator _requestValidator;
-        private readonly ScopeSecretValidator _scopeSecretValidator;
+        private readonly ClientSecretValidator _clientSecretValidator;
 
-        public IntrospectionEndpoint(ScopeSecretValidator scopeSecretValidator, IIntrospectionRequestValidator requestValidator, IIntrospectionResponseGenerator generator, IEventService events, ILogger<IntrospectionEndpoint> logger)
+        public IntrospectionEndpoint(ClientSecretValidator clientSecretValidator, IIntrospectionRequestValidator requestValidator, IIntrospectionResponseGenerator generator, IEventService events, ILogger<IntrospectionEndpoint> logger)
         {
-            _scopeSecretValidator = scopeSecretValidator;
+            _clientSecretValidator = clientSecretValidator;
             _requestValidator = requestValidator;
             _generator = generator;
             _events = events;
@@ -39,21 +39,22 @@ namespace IdentityServer4.Core.Endpoints
                 return new StatusCodeResult(405);
             }
 
-            var scopeResult = await _scopeSecretValidator.ValidateAsync(context.HttpContext);
-            if (scopeResult.Scope == null)
+            var clientResult = await _clientSecretValidator.ValidateAsync(context.HttpContext);
+            if (clientResult.Client == null)
             {
-                _logger.LogWarning("Scope unauthorized to call introspection endpoint. aborting.");
+                _logger.LogWarning("Client unauthorized to call introspection endpoint. aborting.");
                 return new StatusCodeResult(401);
             }
 
             var parameters = context.HttpContext.Request.Form.AsNameValueCollection();
 
-            var validationResult = await _requestValidator.ValidateAsync(parameters, scopeResult.Scope);
-            var response = await _generator.ProcessAsync(validationResult, scopeResult.Scope);
+            var validationResult = await _requestValidator.ValidateAsync(parameters, clientResult.Client);
+
+            var response = await _generator.ProcessAsync(validationResult, clientResult.Client);
 
             if (validationResult.IsActive)
             {
-                await RaiseSuccessEventAsync(validationResult.Token, "active", scopeResult.Scope.Name);
+                await RaiseSuccessEventAsync(validationResult.Token, "active", clientResult.Client.ClientId);
                 return new IntrospectionResult(response);
             }
 
@@ -63,20 +64,20 @@ namespace IdentityServer4.Core.Endpoints
                 {
                     _logger.LogError("Missing token");
 
-                    await RaiseFailureEventAsync(validationResult.ErrorDescription, validationResult.Token, scopeResult.Scope.Name);
+                    await RaiseFailureEventAsync(validationResult.ErrorDescription, validationResult.Token, clientResult.Client.ClientId);
                     //todo return BadRequest("missing_token");
                     return new StatusCodeResult(400);
                 }
 
                 if (validationResult.FailureReason == IntrospectionRequestValidationFailureReason.InvalidToken)
                 {
-                    await RaiseSuccessEventAsync(validationResult.Token, "inactive", scopeResult.Scope.Name);
+                    await RaiseSuccessEventAsync(validationResult.Token, "inactive", clientResult.Client.ClientId);
                     return new IntrospectionResult(response);
                 }
 
                 if (validationResult.FailureReason == IntrospectionRequestValidationFailureReason.InvalidScope)
                 {
-                    await RaiseFailureEventAsync("Scope not authorized to introspect token", validationResult.Token, scopeResult.Scope.Name);
+                    await RaiseFailureEventAsync("Scope not authorized to introspect token", validationResult.Token, clientResult.Client.ClientId);
                     return new IntrospectionResult(response);
                 }
             }

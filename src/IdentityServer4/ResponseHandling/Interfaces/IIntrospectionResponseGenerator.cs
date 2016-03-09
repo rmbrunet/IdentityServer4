@@ -10,6 +10,6 @@ namespace IdentityServer4.Core.ResponseHandling
 {
     public interface IIntrospectionResponseGenerator
     {
-        Task<Dictionary<string, object>> ProcessAsync(IntrospectionRequestValidationResult validationResult, Scope scope);
+        Task<Dictionary<string, object>> ProcessAsync(IntrospectionRequestValidationResult validationResult, Client scope);
     }
 }

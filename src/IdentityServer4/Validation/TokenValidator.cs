@@ -110,7 +110,7 @@ namespace IdentityServer4.Core.Validation
             return customResult;
         }
 
-        public virtual async Task<TokenValidationResult> ValidateAccessTokenAsync(string token, string expectedScope = null)
+        public virtual async Task<TokenValidationResult> ValidateAccessTokenAsync(string token, string audience = null, string expectedScope = null)
         {
             _logger.LogVerbose("Start access token validation");
 
@@ -134,9 +134,10 @@ namespace IdentityServer4.Core.Validation
                 }
 
                 _log.AccessTokenType = AccessTokenType.Jwt.ToString();
+
                 result = await ValidateJwtAsync(
                     token,
-                    string.Format(Constants.AccessTokenAudience, _context.GetIssuerUri().EnsureTrailingSlash()),
+                    audience, //string.Format(Constants.AccessTokenAudience, _context.GetIssuerUri().EnsureTrailingSlash()),
                     await _keyService.GetValidationKeysAsync());
             }
             else
@@ -214,6 +215,8 @@ namespace IdentityServer4.Core.Validation
 
             var parameters = new TokenValidationParameters
             {
+                ValidateAudience = !String.IsNullOrEmpty(audience),
+                ValidateIssuer = true,
                 ValidIssuer = _context.GetIssuerUri(),
                 IssuerSigningKeys = keys,
                 ValidateLifetime = validateLifetime,
@@ -302,12 +305,14 @@ namespace IdentityServer4.Core.Validation
         {
             var claims = new List<Claim>
             {
-                new Claim(JwtClaimTypes.Audience, token.Audience),
+                //new Claim(JwtClaimTypes.Audience, token.Audience),
                 new Claim(JwtClaimTypes.Issuer, token.Issuer),
                 new Claim(JwtClaimTypes.NotBefore, token.CreationTime.ToEpochTime().ToString()),
                 new Claim(JwtClaimTypes.Expiration, token.CreationTime.AddSeconds(token.Lifetime).ToEpochTime().ToString())
             };
 
+
+            claims.AddRange(token.Audiences.Select(aud => new Claim(JwtClaimTypes.Audience, aud)));
             claims.AddRange(token.Claims);
 
             return claims;

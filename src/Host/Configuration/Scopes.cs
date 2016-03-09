@@ -37,7 +37,30 @@ namespace Host.Configuration
                     DisplayName = "API 2",
                     Description = "API 2 features and data, which are better than API 1",
                     Type = ScopeType.Resource
+                },
+
+                new Scope
+                {
+                    Name = "imgsrv.read",
+                    DisplayName = "Image Server Read",
+                    Description = "...",
+                    Type = ScopeType.Resource
+                },
+                new Scope
+                {
+                    Name = "imgsrv.write",
+                    DisplayName = "Image Server Write",
+                    Description = "...",
+                    Type = ScopeType.Resource
+                },
+                new Scope
+                {
+                    Name = "instrospection",
+                    DisplayName = "Instrospection scope",
+                    Description = "...",
+                    Type = ScopeType.Resource
                 }
+
             };
         }
     }

@@ -1,4 +1,4 @@
-﻿{
+{
   "version": "1.0.0-*",
   "compilationOptions": {
     "emitEntryPoint": true
@@ -23,7 +23,12 @@
   },
 
   "frameworks": {
-    "dnx451": { },
+    "dnx451": {
+      "frameworkAssemblies": {
+        "System.DirectoryServices": "4.0.0.0",
+        "System.DirectoryServices.AccountManagement": "4.0.0.0"
+      }
+    },
     "dnxcore50": { }
   },
 
